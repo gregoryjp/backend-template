@@ -1,0 +1,51 @@
+{
+  "name": "backend-template",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Reusable Node.js + Express + TypeScript + Prisma backend template (modular monolith).",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "tsx watch --env-file=.env src/server.ts",
+    "start": "node --env-file=.env dist/server.js",
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check src test scripts",
+    "format": "biome check --write src test scripts",
+    "check:boundaries": "node scripts/check-boundaries.mjs",
+    "check": "npm run typecheck && npm run lint && npm run check:boundaries && npm test",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:deploy": "prisma migrate deploy",
+    "db:studio": "prisma studio",
+    "db:reset": "prisma migrate reset --force",
+    "admin:bootstrap": "tsx --env-file=.env scripts/admin-bootstrap.ts"
+  },
+  "dependencies": {
+    "@node-rs/argon2": "^2.2.1",
+    "@prisma/client": "^6.19.3",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.7.0",
+    "helmet": "^8.3.0",
+    "pino": "^10.3.1",
+    "pino-http": "^11.0.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.14",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/node": "^22.20.4",
+    "@types/supertest": "^7.2.1",
+    "prisma": "^6.19.3",
+    "supertest": "^7.3.0",
+    "tsx": "^4.23.15",
+    "typescript": "~5.9.3",
+    "vitest": "^5.0.2"
+  }
+}

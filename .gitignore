@@ -1,0 +1,26 @@
+# Dependencies and build output
+node_modules/
+dist/
+coverage/
+
+# Environment (secrets stay out of git; see *.example)
+.env
+.env.*
+!.env.example
+!.env.test.example
+
+# Logs and local scratch
+*.log
+tmp/
+
+# Editor / OS
+.idea/
+.vscode/
+.DS_Store
+
+# Local tool state
+.deep-copilot/
+
+# Prisma local dev database (only if sqlite is ever used; we use Postgres)
+*.db
+*.db-journal

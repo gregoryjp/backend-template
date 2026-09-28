@@ -1,0 +1,104 @@
+// Prisma schema for the reusable backend template.
+// Tables and columns are mapped to snake_case (Postgres convention).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  DISABLED
+}
+
+model User {
+  id              String     @id @default(cuid())
+  email           String     @unique @map("email")
+  passwordHash    String     @map("password_hash")
+  name            String?    @map("name")
+  role            Role       @default(USER) @map("role")
+  status          UserStatus @default(ACTIVE) @map("status")
+  emailVerifiedAt DateTime?  @map("email_verified_at")
+  createdAt       DateTime   @default(now()) @map("created_at")
+  updatedAt       DateTime   @updatedAt @map("updated_at")
+
+  sessions                Session[]
+  emailVerificationTokens EmailVerificationToken[]
+  passwordResetTokens     PasswordResetToken[]
+
+  @@map("users")
+}
+
+model Session {
+  id               String    @id @default(cuid())
+  userId           String    @map("user_id")
+  tokenHash        String    @unique @map("token_hash")
+  refreshTokenHash String    @unique @map("refresh_token_hash")
+  familyId         String    @map("family_id")
+  replacedById     String?   @map("replaced_by_id")
+  expiresAt        DateTime  @map("expires_at")
+  refreshExpiresAt DateTime  @map("refresh_expires_at")
+  revokedAt        DateTime? @map("revoked_at")
+  userAgent        String?   @map("user_agent")
+  ip               String?   @map("ip")
+  lastUsedAt       DateTime  @default(now()) @map("last_used_at")
+  createdAt        DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([familyId])
+  @@map("sessions")
+}
+
+model EmailVerificationToken {
+  id        String    @id @default(cuid())
+  userId    String    @map("user_id")
+  tokenHash String    @unique @map("token_hash")
+  expiresAt DateTime  @map("expires_at")
+  usedAt    DateTime? @map("used_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("email_verification_tokens")
+}
+
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String    @map("user_id")
+  tokenHash String    @unique @map("token_hash")
+  expiresAt DateTime  @map("expires_at")
+  usedAt    DateTime? @map("used_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("password_reset_tokens")
+}
+
+model AuditLog {
+  id           String   @id @default(cuid())
+  actorId      String?  @map("actor_id")
+  action       String   @map("action")
+  resourceType String?  @map("resource_type")
+  resourceId   String?  @map("resource_id")
+  metadata     Json?    @map("metadata")
+  ip           String?  @map("ip")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@index([actorId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
