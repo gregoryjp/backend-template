@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: app
+          POSTGRES_PASSWORD: app
+          POSTGRES_DB: app
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U app -d app"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+    env:
+      NODE_ENV: test
+      # The harness refuses to run unless the database name matches
+      # TEST_DATABASE_NAME and NODE_ENV=test.
+      DATABASE_URL: postgresql://app:app@localhost:5432/app_test
+      TEST_DATABASE_URL: postgresql://app:app@localhost:5432/app_test
+      TEST_DATABASE_NAME: app_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --no-fund --no-audit
+      - name: Create isolated test database
+        run: psql -h localhost -U app -d app -c "CREATE DATABASE app_test OWNER app;"
+        env:
+          PGPASSWORD: app
+      - name: Build (production emit)
+        run: npm run build
+      - name: Typecheck, lint, boundaries, tests
+        run: npm run check

@@ -12,7 +12,9 @@ export function loadTestEnv(): void {
 	try {
 		text = readFileSync(path, "utf8");
 	} catch {
-		throw new Error(`Missing ${path}. Copy .env.test.example to .env.test and retry.`);
+		// CI provides the test environment directly (no .env.test on disk); the
+		// real guard is `assertTestDatabase`, which still rejects non-test DBs.
+		return;
 	}
 
 	for (const rawLine of text.split("\n")) {
