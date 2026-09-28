@@ -24,11 +24,15 @@ jobs:
           --health-retries 10
     env:
       NODE_ENV: test
+      LOG_LEVEL: silent
       # The harness refuses to run unless the database name matches
       # TEST_DATABASE_NAME and NODE_ENV=test.
       DATABASE_URL: postgresql://app:app@localhost:5432/app_test
       TEST_DATABASE_URL: postgresql://app:app@localhost:5432/app_test
       TEST_DATABASE_NAME: app_test
+      # Mirror .env.test.example: the e2e suite issues many auth requests from
+      # one IP, so the limiter ceiling must be the test value, not production.
+      AUTH_RATE_LIMIT_MAX: 1000
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
