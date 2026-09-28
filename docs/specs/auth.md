@@ -14,6 +14,7 @@ Requirements and acceptance for authentication and sessions.
 - R8 Disabled accounts are rejected everywhere with `ACCOUNT_DISABLED`.
 - R9 Enumeration protection: identical responses regardless of whether an account exists.
 - R10 Verification/recovery tokens are single-use and stored hashed.
+- R11 Registration records versioned legal consents (terms/privacy required by default; marketing optional), enforced server-side from configuration — see `docs/LEGAL.md`.
 
 ## Acceptance (covered by `src/modules/auth/__tests__/`)
 
@@ -25,6 +26,8 @@ Requirements and acceptance for authentication and sessions.
 - Change password invalidates other sessions but not the current one.
 - Disabled account → login/refresh/verify/reset all fail with `ACCOUNT_DISABLED`.
 - Registering a duplicate email → `409 EMAIL_TAKEN`.
+- Registering without a mandatory consent → `400 LEGAL_CONSENT_REQUIRED`, and no account is created.
+- Accepted consents are stored with the configured version (never a client-supplied version) and timestamp.
 
 ## Credential transport
 

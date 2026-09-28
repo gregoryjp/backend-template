@@ -20,6 +20,12 @@ enum UserStatus {
   DISABLED
 }
 
+enum LegalConsentType {
+  TERMS
+  PRIVACY
+  MARKETING
+}
+
 model User {
   id              String     @id @default(cuid())
   email           String     @unique @map("email")
@@ -34,6 +40,7 @@ model User {
   sessions                Session[]
   emailVerificationTokens EmailVerificationToken[]
   passwordResetTokens     PasswordResetToken[]
+  legalConsents           LegalConsent[]
 
   @@map("users")
 }
@@ -86,6 +93,22 @@ model PasswordResetToken {
 
   @@index([userId])
   @@map("password_reset_tokens")
+}
+
+model LegalConsent {
+  id         String            @id @default(cuid())
+  userId     String            @map("user_id")
+  type       LegalConsentType  @map("type")
+  version    String            @map("version")
+  acceptedAt DateTime          @default(now()) @map("accepted_at")
+  ip         String?           @map("ip")
+  userAgent  String?           @map("user_agent")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, type, version])
+  @@index([userId])
+  @@map("legal_consents")
 }
 
 model AuditLog {

@@ -35,6 +35,18 @@ export const envSchema = z
 		EMAIL_VERIFY_TTL_MINUTES: z.coerce.number().int().positive().default(60),
 		PASSWORD_RESET_TTL_MINUTES: z.coerce.number().int().positive().default(30),
 
+		LEGAL_TERMS_REQUIRED: z
+			.string()
+			.default("true")
+			.transform((v) => v === "true"),
+		LEGAL_TERMS_VERSION: z.string().default("1.0"),
+		LEGAL_PRIVACY_REQUIRED: z
+			.string()
+			.default("true")
+			.transform((v) => v === "true"),
+		LEGAL_PRIVACY_VERSION: z.string().default("1.0"),
+		LEGAL_MARKETING_VERSION: z.string().default("1.0"),
+
 		AUTH_RATE_LIMIT_WINDOW_MS: z.coerce.number().int().positive().default(900_000),
 		AUTH_RATE_LIMIT_MAX: z.coerce.number().int().positive().default(20),
 

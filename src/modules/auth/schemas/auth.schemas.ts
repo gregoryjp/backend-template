@@ -17,6 +17,12 @@ export const registerSchema = z.object({
 	email,
 	password: passwordSchema,
 	name: z.string().trim().min(1).max(120).optional(),
+	// Legal consent booleans. Whether TERMS/PRIVACY are required is enforced by
+	// the service against configuration (LEGAL_*), not hardcoded here, so the
+	// template stays generic across PRDs.
+	acceptTerms: z.boolean().default(false),
+	acceptPrivacy: z.boolean().default(false),
+	acceptMarketing: z.boolean().optional(),
 });
 
 export const loginSchema = z.object({

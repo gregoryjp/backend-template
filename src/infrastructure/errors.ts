@@ -9,6 +9,7 @@ export type ErrorCode =
 	| "FORBIDDEN"
 	| "NOT_FOUND"
 	| "CONFLICT"
+	| "LEGAL_CONSENT_REQUIRED"
 	| "TOO_MANY_REQUESTS"
 	| "INTERNAL_ERROR";
 
@@ -47,6 +48,9 @@ export const conflict = (message: string): AppError => new AppError(409, "CONFLI
 
 export const tooManyRequests = (message = "Too many requests"): AppError =>
 	new AppError(429, "TOO_MANY_REQUESTS", message);
+
+export const legalConsentRequired = (message: string): AppError =>
+	new AppError(400, "LEGAL_CONSENT_REQUIRED", message);
 
 function isBodyParseError(err: unknown): boolean {
 	return (

@@ -1,6 +1,8 @@
+import { LegalConsentType } from "@prisma/client";
 import type { Response } from "supertest";
 import request from "supertest";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
+import { env } from "../../../config/env.js";
 import { prisma } from "../../../infrastructure/database.js";
 import { createApp } from "../../../infrastructure/http/app.js";
 import { type EmailGateway, setEmailGatewayForTesting } from "../services/email.service.js";
@@ -9,6 +11,8 @@ const app = createApp();
 
 const EMAIL = "new@example.com";
 const PASSWORD = "Secret123";
+const LEGAL_CONSENT = { acceptTerms: true, acceptPrivacy: true };
+const FULL_CONSENT = { acceptTerms: true, acceptPrivacy: true, acceptMarketing: true };
 
 const captured = {
 	verification: [] as Array<{ to: string; token: string }>,
@@ -45,7 +49,9 @@ function extractRefreshCookie(res: Response): string | undefined {
 }
 
 async function createVerifiedUser(email = EMAIL, password = PASSWORD): Promise<void> {
-	await request(app).post("/api/auth/register").send({ email, password });
+	await request(app)
+		.post("/api/auth/register")
+		.send({ email, password, ...LEGAL_CONSENT });
 	const token = captured.verification.at(-1)?.token;
 	expect(token).toBeTruthy();
 	await request(app).post("/api/auth/verify-email").send({ token });
@@ -55,7 +61,7 @@ describe("auth — registration and email verification", () => {
 	it("registers and sends a verification email", async () => {
 		const res = await request(app)
 			.post("/api/auth/register")
-			.send({ email: EMAIL, password: PASSWORD });
+			.send({ email: EMAIL, password: PASSWORD, ...LEGAL_CONSENT });
 		expect(res.status).toBe(201);
 		expect(captured.verification).toHaveLength(1);
 
@@ -70,14 +76,16 @@ describe("auth — registration and email verification", () => {
 
 		const res = await request(app)
 			.post("/api/auth/register")
-			.send({ email: EMAIL, password: PASSWORD });
+			.send({ email: EMAIL, password: PASSWORD, ...LEGAL_CONSENT });
 		expect(res.status).toBe(201);
 		expect(captured.verification).toHaveLength(0);
 		expect(await prisma.user.count({ where: { email: EMAIL } })).toBe(1);
 	});
 
 	it("verifies with the emailed token (single use)", async () => {
-		await request(app).post("/api/auth/register").send({ email: EMAIL, password: PASSWORD });
+		await request(app)
+			.post("/api/auth/register")
+			.send({ email: EMAIL, password: PASSWORD, ...LEGAL_CONSENT });
 		const token = captured.verification[0]?.token;
 		expect(token).toBeTruthy();
 
@@ -100,6 +108,43 @@ describe("auth — registration and email verification", () => {
 			.send({ email: "not-an-email", password: "short" });
 		expect(bad.status).toBe(400);
 		expect(bad.body.code).toBe("VALIDATION_ERROR");
+	});
+
+	it("requires the configured legal consents before creating an account", async () => {
+		const noTerms = await request(app)
+			.post("/api/auth/register")
+			.send({ email: EMAIL, password: PASSWORD, acceptTerms: false, acceptPrivacy: true });
+		expect(noTerms.status).toBe(400);
+		expect(noTerms.body.code).toBe("LEGAL_CONSENT_REQUIRED");
+		expect(await prisma.user.count({ where: { email: EMAIL } })).toBe(0);
+
+		const noPrivacy = await request(app)
+			.post("/api/auth/register")
+			.send({ email: EMAIL, password: PASSWORD, acceptTerms: true, acceptPrivacy: false });
+		expect(noPrivacy.status).toBe(400);
+		expect(noPrivacy.body.code).toBe("LEGAL_CONSENT_REQUIRED");
+	});
+
+	it("records accepted consents with the configured versions, never client versions", async () => {
+		const res = await request(app)
+			.post("/api/auth/register")
+			.send({ email: EMAIL, password: PASSWORD, ...FULL_CONSENT });
+		expect(res.status).toBe(201);
+
+		const user = await prisma.user.findUnique({ where: { email: EMAIL } });
+		expect(user).not.toBeNull();
+		if (!user) return;
+
+		const consents = await prisma.legalConsent.findMany({ where: { userId: user.id } });
+		const types = consents.map((c) => c.type);
+		expect(types).toContain(LegalConsentType.TERMS);
+		expect(types).toContain(LegalConsentType.PRIVACY);
+		expect(types).toContain(LegalConsentType.MARKETING);
+
+		const terms = consents.find((c) => c.type === LegalConsentType.TERMS);
+		expect(terms?.version).toBe(env.LEGAL_TERMS_VERSION);
+		const privacy = consents.find((c) => c.type === LegalConsentType.PRIVACY);
+		expect(privacy?.version).toBe(env.LEGAL_PRIVACY_VERSION);
 	});
 });
 

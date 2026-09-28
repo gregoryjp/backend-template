@@ -21,7 +21,7 @@ const REGISTER_MESSAGE = "If this email is new, a verification link has been sen
 export const authController = {
 	async register(req: Request, res: Response): Promise<void> {
 		const input = registerSchema.parse(req.body);
-		await authService.register(input);
+		await authService.register(input, meta(req));
 		res.status(201).json({ message: REGISTER_MESSAGE });
 	},
 

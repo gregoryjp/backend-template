@@ -47,7 +47,10 @@ paths:
   /api/auth/register:
     post:
       tags: [auth]
-      summary: Register a user (sends a verification email; enumeration-safe body)
+      summary: Register a user (records legal consents; sends a verification email; enumeration-safe body)
+      description: |
+        Missing a mandatory consent returns 400 with code LEGAL_CONSENT_REQUIRED
+        (terms/privacy required by default; see LEGAL_* configuration).
       requestBody:
         required: true
         content:
@@ -363,6 +366,9 @@ components:
         email: { type: string, format: email }
         password: { type: string, minLength: 8, maxLength: 72 }
         name: { type: string, minLength: 1, maxLength: 120 }
+        acceptTerms: { type: boolean, default: false }
+        acceptPrivacy: { type: boolean, default: false }
+        acceptMarketing: { type: boolean }
 
     LoginRequest:
       type: object

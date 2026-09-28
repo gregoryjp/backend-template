@@ -1,13 +1,15 @@
 import { randomUUID } from "node:crypto";
+import { LegalConsentType } from "@prisma/client";
 import { env } from "../../../config/env.js";
 import { prisma } from "../../../infrastructure/database.js";
-import { badRequest, unauthorized } from "../../../infrastructure/errors.js";
+import { badRequest, legalConsentRequired, unauthorized } from "../../../infrastructure/errors.js";
 import { logger } from "../../../infrastructure/logger.js";
 import { hashPassword, verifyPassword } from "../../../shared/security/password.service.js";
 import {
 	emailVerificationTokenRepository,
 	passwordResetTokenRepository,
 } from "../repositories/authToken.repository.js";
+import { legalConsentRepository } from "../repositories/legalConsent.repository.js";
 import { sessionRepository } from "../repositories/session.repository.js";
 import { userRepository } from "../repositories/user.repository.js";
 import type {
@@ -46,16 +48,44 @@ export const authService = {
 	 * Registration never reveals whether the email already exists: both paths
 	 * return the same shape and the duplicate path simply sends nothing.
 	 */
-	async register(input: RegisterInput): Promise<{ created: boolean }> {
+	async register(input: RegisterInput, meta: SessionMeta): Promise<{ created: boolean }> {
+		// Legal consents are enforced from configuration, never hardcoded, so a
+		// PRD decides which agreements are mandatory for account creation.
+		if (env.LEGAL_TERMS_REQUIRED && !input.acceptTerms) {
+			throw legalConsentRequired("You must accept the Terms of Service to create an account");
+		}
+		if (env.LEGAL_PRIVACY_REQUIRED && !input.acceptPrivacy) {
+			throw legalConsentRequired("You must accept the Privacy Policy to create an account");
+		}
+
 		const existing = await userRepository.findByEmail(input.email);
 		if (existing) return { created: false };
 
 		const passwordHash = await hashPassword(input.password);
-		const user = await userRepository.create({
-			email: input.email,
-			passwordHash,
-			name: input.name,
+		const consents: Array<{ type: LegalConsentType; version: string }> = [
+			{ type: LegalConsentType.TERMS, version: env.LEGAL_TERMS_VERSION },
+			{ type: LegalConsentType.PRIVACY, version: env.LEGAL_PRIVACY_VERSION },
+		];
+		if (input.acceptMarketing) {
+			consents.push({ type: LegalConsentType.MARKETING, version: env.LEGAL_MARKETING_VERSION });
+		}
+
+		const user = await prisma.$transaction(async (tx) => {
+			const created = await tx.user.create({
+				data: { email: input.email, passwordHash, name: input.name },
+			});
+			await legalConsentRepository.createMany(
+				tx,
+				created.id,
+				consents.map((c) => ({
+					...c,
+					ip: meta.ip,
+					userAgent: meta.userAgent,
+				})),
+			);
+			return created;
 		});
+
 		const token = generateOpaqueToken();
 		await emailVerificationTokenRepository.create(
 			user.id,
