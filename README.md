@@ -54,8 +54,11 @@ ADMIN_BOOTSTRAP_EMAIL=admin@example.com ADMIN_BOOTSTRAP_PASSWORD='change-me-stro
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm run lint` | Biome check (src, test, scripts) |
 | `npm run check:boundaries` | Enforce module boundaries |
+| `npm run check:sql` | Forbid unsafe/interpolated SQL |
 | `npm run test` | Vitest + Supertest against the guarded test DB |
-| `npm run check` | typecheck + lint + boundaries + tests (the full gate) |
+| `npm run check` | typecheck + lint + boundaries + SQL guard + tests (the full gate) |
+| `npm run status` | Progress summary from registered evidence |
+| `npm run status:audit` | Validate the task/evidence register (non-zero on findings) |
 | `npm run db:migrate` | Create/appl​y a dev migration |
 | `npm run db:deploy` | Apply committed migrations |
 | `npm run db:reset` | Reset the dev DB (destructive) |
@@ -77,8 +80,11 @@ Tests run against a **dedicated** PostgreSQL database (`app_test`). The harness 
 - `docs/specs/` — requirements and acceptance (incl. `example-prd.md`).
 - `skills/` — reusable procedures.
 - `agents/` — the four agent role descriptions.
+- `docs/STANDARDS.md` — mandatory engineering & UX rules.
+- `docs/MOBILE_PROFILE.md` — optional mobile profile (not implemented).
+- `docs/LEGAL.md` — legal consents and compliance mechanisms.
 - `docs/RUNBOOK.md` — operations, migrations, recovery, diagnosis.
-- `docs/TEMPLATE.md` — turning this into a private GitHub template and versioning it.
+- `docs/TEMPLATE.md` — turning this into a GitHub template and versioning it.
 
 ## New project from a PRD
 

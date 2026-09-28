@@ -2,6 +2,8 @@
 
 A **modular monolith** organized by functionality. One process, one database, clear module boundaries.
 
+Scope is backend-first. A mobile/web UI is an **optional profile** (`docs/MOBILE_PROFILE.md`), not implemented in this template. Legal consent at signup is versioned and config-driven (`docs/LEGAL.md`).
+
 ## Layers per module
 
 ```

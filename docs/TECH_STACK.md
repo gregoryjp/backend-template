@@ -30,3 +30,5 @@ Current, verified decisions. Change any of these via an ADR in `docs/adr/`.
 ## Adding capabilities (only when a PRD justifies them)
 
 Redis/queues, websockets, background jobs, file storage, and similar are **not included by default**. Add them as a new module plus infrastructure, with an ADR, when the PRD requires them. See `docs/ARCHITECTURE.md`.
+
+A mobile/web UI is an **optional profile** (`docs/MOBILE_PROFILE.md`), not implemented. Legal consents are recorded at signup (versioned, config-driven) — see `docs/LEGAL.md`. Raw SQL is guarded by `scripts/check-raw-sql.mjs`; all queries go through Prisma's parameterized API.

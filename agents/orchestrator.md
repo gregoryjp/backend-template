@@ -18,7 +18,8 @@ Turn a PRD into a tracked backlog, keep the work moving, and record progress. Ow
 2. Identify contradictions and open decisions; list which are routine (resolve by convention) vs. which need a human answer.
 3. Map what the template already solves vs. what is new.
 4. Create specs and a dependency-ordered backlog.
-5. Assign each item to architect/implementer/reviewer with bounded file sets.
+5. Assign each item to architect/implementer/reviewer (and ux-mobile when a UI exists) with bounded file sets.
+6. Select the applicable skills per task: the backend skills always; `navigation-review`, `list-and-pagination`, `screen-states`, `form-and-mutation`, `mobile-journey-test` only when there is a UI.
 
 ## Output
 

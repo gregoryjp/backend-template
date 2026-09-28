@@ -11,6 +11,10 @@ Template scope (this repository). Future project work starts from `docs/specs/` 
 - [x] Template → private GitHub template + versioning guide.
 - [x] OpenAPI contract (`docs/openapi/openapi.yaml`) and Bruno collection (`bruno/`).
 - [x] Optional local mail server (mailpit) Compose profile.
+- [x] Engineering & UX standard, mobile profile, and legal/compliance docs.
+- [x] UX/Mobile role and five UI skills (navigation, list/pagination, screen states, form/mutation, mobile journey).
+- [x] Legal consent at registration (versioned, config-driven).
+- [x] Raw-SQL guard and status/audit scripts.
 
 ## Template — open
 

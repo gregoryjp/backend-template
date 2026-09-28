@@ -9,6 +9,13 @@ Operations, migrations, recovery, and diagnosis.
 - Never hand-edit an applied migration; add a new migration instead.
 - The test DB is migrated automatically by the test harness on `npm test`.
 
+## Legal consent
+
+- Mandatory consents at signup: `LEGAL_TERMS_REQUIRED`, `LEGAL_PRIVACY_REQUIRED` (default true).
+- Versions recorded: `LEGAL_TERMS_VERSION`, `LEGAL_PRIVACY_VERSION`, `LEGAL_MARKETING_VERSION` — the server records the configured version, never a client string.
+- Missing consent → `400 LEGAL_CONSENT_REQUIRED`; no account is created.
+- Actual terms/privacy text comes from the PRD; the template never ships placeholder legal text as if real. See `docs/LEGAL.md`.
+
 ## Admin bootstrap
 
 ```bash

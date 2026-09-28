@@ -34,9 +34,12 @@ Start here, then read `docs/STATE.md`.
 | `docs/adr/` | Justified decisions |
 | `docs/modules/<m>.md` | Contract and entry points per module |
 | `docs/specs/` | Requirements and acceptance per feature |
+| `docs/STANDARDS.md` | Mandatory engineering & UX rules |
+| `docs/MOBILE_PROFILE.md` | Optional mobile profile (not implemented) |
+| `docs/LEGAL.md` | Legal consents and compliance mechanisms |
 | `skills/` | Reusable procedures (one canonical file each) |
-| `agents/` | Role descriptions for the four agents |
+| `agents/` | Role descriptions (orchestrator, architect, implementer, reviewer, ux-mobile) |
 
 ## Agents
 
-Roles are defined as Markdown in `agents/` (orchestrator, architect, implementer, reviewer). They are **descriptions, not executable agents**. Invoke a role through the environment's subagent capability (for example `spawn_agent` with `agent_type` "explore"/"general"), passing the role file, the task, and the bounded list of files. If no independent review capability exists, mark that state as pending — never present a self-review as an independent one.
+Roles are defined as Markdown in `agents/` (orchestrator, architect, implementer, reviewer, and `ux-mobile` when a UI exists). They are **descriptions, not executable agents**. Invoke a role through the environment's subagent capability (for example `spawn_agent` with `agent_type` "explore"/"general"), passing the role file, the task, and the bounded list of files. If no independent review capability exists, mark that state as pending — never present a self-review as an independent one.
