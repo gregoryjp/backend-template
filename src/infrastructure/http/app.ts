@@ -2,8 +2,10 @@ import cors from "cors";
 import express from "express";
 import helmet from "helmet";
 import { env } from "../../config/env.js";
+import { adminRouter } from "../../modules/admin/index.js";
 import { authRouter } from "../../modules/auth/index.js";
 import { healthRouter } from "../../modules/health/index.js";
+import { usersRouter } from "../../modules/users/index.js";
 import { errorHandler, notFoundHandler } from "../errors.js";
 import { httpLogger } from "../logger.js";
 import { requestId } from "../requestId.js";
@@ -33,6 +35,8 @@ export function createApp(): express.Express {
 
 	app.use("/health", healthRouter);
 	app.use("/api/auth", authRouter);
+	app.use("/api/users", usersRouter);
+	app.use("/api/admin", adminRouter);
 
 	app.use(notFoundHandler);
 	app.use(errorHandler);

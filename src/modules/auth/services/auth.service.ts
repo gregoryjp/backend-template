@@ -3,6 +3,7 @@ import { env } from "../../../config/env.js";
 import { prisma } from "../../../infrastructure/database.js";
 import { badRequest, unauthorized } from "../../../infrastructure/errors.js";
 import { logger } from "../../../infrastructure/logger.js";
+import { hashPassword, verifyPassword } from "../../../shared/security/password.service.js";
 import {
 	emailVerificationTokenRepository,
 	passwordResetTokenRepository,
@@ -18,7 +19,6 @@ import type {
 } from "../schemas/auth.schemas.js";
 import type { AuthContext, AuthUser, LoginResult, SessionMeta } from "../types/auth.types.js";
 import { emailGateway } from "./email.service.js";
-import { hashPassword, verifyPassword } from "./password.service.js";
 import { generateOpaqueToken, hashOpaqueToken } from "./token.service.js";
 
 function toAuthUser(user: {

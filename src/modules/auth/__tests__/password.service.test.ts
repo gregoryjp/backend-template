@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { hashPassword, verifyPassword } from "../services/password.service.js";
+import { hashPassword, verifyPassword } from "../../../shared/security/password.service.js";
 import { generateOpaqueToken, hashOpaqueToken } from "../services/token.service.js";
 
 describe("password service (Argon2id)", () => {
