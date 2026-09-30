@@ -28,3 +28,16 @@ Template scope (this repository). Future project work starts from `docs/specs/` 
 ## Dependency order
 
 CI and Docker depend on the app building (`npm run build`). Docs and the init script are independent.
+
+## SaaS expansion — proposed, not implemented
+
+See docs/specs/saas-platform.md. Complete and verify one module at a time.
+
+- [ ] S1 Organizations, memberships, invitations and tenant isolation.
+- [ ] S2 TOTP 2FA, recovery and login challenge.
+- [ ] S3 Scoped organization API keys.
+- [ ] S4 Data export and erasure workflow.
+- [ ] S5 Optional billing, verified webhooks, entitlements and usage limits.
+- [ ] S6 Optional AI chat with consent and budgets.
+- [ ] S7 Target deployment and restore verification.
+- [ ] Optional agent-specific packaging for existing skills.

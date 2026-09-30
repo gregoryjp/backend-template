@@ -23,9 +23,13 @@ All phases complete. The template is a working, tested base: executable app, aut
 | `npm run typecheck` | pass | — |
 | `npm run lint` | pass | — |
 | `npm run check:boundaries` | pass | — |
-| `npm test` | 34 passed (5 files) | — |
+| `npm test` | 36 passed (5 files) | — |
 | `npm run check` | pass (full gate) | `check_exit=0` |
 | `node scripts/init-project.mjs --name issue-tracker` (temp copy) | pass | package.json + bruno.json renamed |
-| `npm ci` + `npm test` (temp copy) | pass, 34/34 | `ci_exit=0`, `test_exit=0` |
+| `npm ci` + `npm test` (temp copy) | pass, 36/36 | `ci_exit=0`, `test_exit=0` |
 
 A later change invalidates affected evidence; re-run before trusting it.
+
+## SaaS expansion intake — 2026-09-30
+
+Compared the supplied video with actual repository code. The inventory and proposed contracts are in docs/specs/saas-platform.md, with ADR 0005. S1–S7 are planned only; no corresponding routes, migrations or integrations exist. Begin implementation with S1. Earlier verification evidence applies to the existing baseline, not future SaaS modules.

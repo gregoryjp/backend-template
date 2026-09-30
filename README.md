@@ -91,3 +91,7 @@ Tests run against a **dedicated** PostgreSQL database (`app_test`). The harness 
 1. Copy this template, run `node scripts/init-project.mjs --name <name>`.
 2. Run the flow: `skills/prd-intake.md` → `plan-feature` → `implement-module` / `database-change` / `api-contract` → `test-feature` → `security-review` → `review-change` → `project-handoff`.
 3. Keep `docs/STATE.md` and `docs/BACKLOG.md` current.
+
+## SaaS expansion
+
+The capabilities shown in Gregory's Django SaaS video are mapped to this Node/Express template in docs/specs/saas-platform.md. This separates existing code from proposed organizations, 2FA, API keys, data rights, billing and AI chat. The proposed modules are not executable yet.
